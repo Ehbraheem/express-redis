@@ -1,4 +1,4 @@
-import Joi from 'joi';
+import { Root } from 'joi';
 
 const allowedValues = [0, 1, 2, 3, 4, 5, 6, 7, 8, 10, 11, 12, 13, 14, 15] as const;
 
@@ -27,7 +27,7 @@ export interface ConnectOption extends ConnectBase, ConnectionReadyOption {
   autoResendUnfulfilledCommands?: boolean;
   lazyConnect?: boolean;
   maxRetriesPerRequest?: number;
-  tls?: object;
+  tls?: Record<string, unknown>;
   keyPrefix?: string;
   retryStrategy?: (times: number) => number | void;
   reconnectOnError?: (error: Error) => boolean | 1 | 2;
@@ -93,5 +93,5 @@ export interface ConnectionArgs {
 }
 
 export interface SchemaArgs {
-  validate: Joi;
+  validate: Root;
 }

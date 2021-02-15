@@ -1,12 +1,12 @@
 import { ObjectSchema } from 'joi';
 import { SchemaArgs } from './arguments';
 
-const base = ({ validate }: SchemaArgs): object => ({
+const base = ({ validate }: SchemaArgs): Record<string, unknown> => ({
   port: validate.number().default(6379),
   host: validate.string().optional(),
 });
 
-const connectionReady = ({ validate }: SchemaArgs): object => ({
+const connectionReady = ({ validate }: SchemaArgs): Record<string, unknown> => ({
   enableReadyCheck: validate.boolean().default(true),
   enableOfflineQueue: validate.boolean().default(true),
 });
@@ -105,6 +105,6 @@ export const sentinelConnectSchema = ({ validate }: SchemaArgs): ObjectSchema =>
 
 export const subscriberSchema = ({ validate }: SchemaArgs): ObjectSchema =>
   validate.object().keys({
-    subscribers: validate.func().required(),
+    subscriber: validate.func().required(),
     topics: validate.array().items(validate.string().min(2)),
   });
