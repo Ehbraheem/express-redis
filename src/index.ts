@@ -27,7 +27,7 @@ const logger = console;
 
 type Mix = RedisType | Cluster;
 
-type Subscriber = ({ redis: Mix, req: RedisClientRequest, res: Response }) => Promise<void>;
+type Subscriber = ({ redis: Mix }) => Promise<void>;
 
 export type RedisMiddleware = (req: RedisClientRequest, res: Response, next: NextFunction) => Promise<void>;
 
@@ -48,14 +48,10 @@ export const redisClient = (pluginOptions): Promise<Mix> => {
   return connect({ mode, options });
 };
 
-export default (pluginOptions): RedisMiddleware => async (
-  req: RedisClientRequest,
-  res: Response,
-  next: NextFunction
-) => {
+export default async (pluginOptions): Promise<Mix> => {
   let redis;
   try {
-    redis = await redisClient({ pluginOptions });
+    redis = await redisClient(pluginOptions);
 
     const { subscriberOption } = pluginOptions;
 
@@ -82,8 +78,6 @@ export default (pluginOptions): RedisMiddleware => async (
 
       subscriber({
         redis,
-        req,
-        res,
       });
     }
 
@@ -94,19 +88,18 @@ export default (pluginOptions): RedisMiddleware => async (
     redis.on('end', end(logger));
     redis.on('connect', connectHandler(logger));
 
-    req.redis = redis;
-
-    const serverClose = (client => async (): Promise<void> => {
-      logger.info('Server closed...');
-      try {
-        const response = await client.quit();
-        if (response === 'OK') {
-          logger.info('Redis client has successfully shut down');
+    const serverClose = (client => (): void => {
+      if (client.status === 'ready') {
+        try {
+          const response = client.disconnect();
+          if (response === 'OK') {
+            logger.info('Redis client has successfully shut down');
+          }
+        } catch (error) {
+          logger.error('Redis did not shut down properly');
+          logger.error(error);
+          client.disconnect();
         }
-      } catch (error) {
-        logger.error('Redis did not shut down properly');
-        logger.error(error);
-        await client.disconnect();
       }
     })(redis);
 
@@ -114,10 +107,10 @@ export default (pluginOptions): RedisMiddleware => async (
     process.on('unhandledRejection', serverClose);
     process.on('SIGTERM', serverClose);
     process.on('SIGINT', serverClose);
+
+    return redis;
   } catch (error) {
     logger.error(error);
     redis && (await redis.quit());
-  } finally {
-    next();
   }
 };

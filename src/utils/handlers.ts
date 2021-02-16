@@ -22,7 +22,7 @@ export const reconnect = (logger): EventCallback => (time): void => {
 
 export const end = (logger): EventCallback => (msg): void => {
   logger.info('No more open connection...');
-  logger.verbose(msg);
+  logger.info(msg);
 };
 
 export const select = (logger): EventCallback => (msg): void => {
