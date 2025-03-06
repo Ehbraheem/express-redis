@@ -1,0 +1,91 @@
+{
+  "name": "@ctt/redis-client",
+  "version": "0.0.1",
+  "description": "Configuration based Redis client middleware for Express.",
+  "main": "lib/index.js",
+  "engines": {
+    "node": ">=10.14.1"
+  },
+  "scripts": {
+    "build": "tsc",
+    "build:watch": "yarn clean:build -w",
+    "clean": "rm -rf lib/*",
+    "lint": "eslint 'src/**'",
+    "prebuild": "yarn clean",
+    "postbuild": "yarn prettify:lib",
+    "prepublishOnly": "[ \"$NODE_ENV\" = \"production\" ] && exit 0; yarn build",
+    "pretest": "yarn lint",
+    "prettify:lib": "prettier --write 'lib/**/**/**.*s'",
+    "test": "jest",
+    "test:watch": "yarn test --watch",
+    "validate": "npm ls"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git+ssh://git@github.com:Ehbraheem/express-redis.git#main"
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/"
+  },
+  "author": "ehbraheem@gmail.com",
+  "license": "SEE LICENSE IN <LICENSE>",
+  "dependencies": {
+    "ioredis": "4.22.0",
+    "joi": "17.4.0"
+  },
+  "peerDependencies": {
+    "express": "*"
+  },
+  "jest": {
+    "testURL": "http://localhost/",
+    "collectCoverageFrom": [
+      "src/**/*.{ts,tsx}"
+    ],
+    "roots": [
+      "./src/"
+    ],
+    "coverageReporters": [
+      "html",
+      "text",
+      "text-summary"
+    ],
+    "verbose": true,
+    "testEnvironment": "node",
+    "testMatch": [
+      "**/__tests__/**/*.+(ts|tsx|js)",
+      "**/?(*.)+(spec|test).+(ts|tsx|js)"
+    ],
+    "transform": {
+      "^.+\\.(ts|tsx)$": "ts-jest"
+    }
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged",
+      "pre-push": "yarn run test"
+    }
+  },
+  "lint-staged": {
+    "**/*.{js, tsx, ts}": [
+      "eslint --fix",
+      "yarn test"
+    ]
+  },
+  "devDependencies": {
+    "@types/express": "4.17.11",
+    "@types/ioredis": "4.19.4",
+    "@types/jest": "26.0.20",
+    "@typescript-eslint/eslint-plugin": "4.15.0",
+    "@typescript-eslint/parser": "4.15.0",
+    "eslint": "7.20.0",
+    "eslint-config-prettier": "7.2.0",
+    "eslint-plugin-jest": "24.1.3",
+    "eslint-plugin-prettier": "3.3.1",
+    "husky": "5.0.9",
+    "jest": "26.6.3",
+    "lint-staged": "10.5.4",
+    "prettier": "2.2.1",
+    "ts-jest": "26.5.1",
+    "typescript": "4.1.5"
+  }
+}
